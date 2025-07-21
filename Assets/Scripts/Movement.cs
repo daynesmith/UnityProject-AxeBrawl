@@ -29,6 +29,7 @@ public class Movement : NetworkBehaviour
     Animator animator;
 
     public CharacterController characterController { get; private set; }
+    public PlayerHealth characterHealth { get; private set; }
     public bool isGrounded { get; private set; }
 
     Vector3 velocity;
@@ -38,6 +39,7 @@ public class Movement : NetworkBehaviour
         Cursor.lockState = CursorLockMode.Locked;
         characterController = GetComponent<CharacterController>();
         animator = GetComponent<Animator>();
+        characterHealth = GetComponent<PlayerHealth>();
         lastPosition = transform.position;
         if (networkAnimator == null)
         {
@@ -68,6 +70,10 @@ public class Movement : NetworkBehaviour
         if (Input.GetKeyDown(KeyCode.Mouse0))
         {
             networkAnimator.SetTrigger("punch");
+        }
+        if (Input.GetKeyDown(KeyCode.R))
+        {
+            characterHealth.CmdTakeDamage(100);
         }
 
 
@@ -139,5 +145,11 @@ public class Movement : NetworkBehaviour
     {
         if (groundedCheck)
             Gizmos.DrawRay(groundedCheck.position, Vector3.down * groundedDistance);
+    }
+
+    public void ResetState()
+    {
+        velocity = Vector3.zero;
+        inputDir = Vector2.zero;
     }
 }

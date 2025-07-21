@@ -291,6 +291,8 @@ MonoBehaviour:
   syncMode: 0
   syncInterval: 0
   currentHealth: 100
+  maxHealth: 100
+  respawnDelay: 3
 --- !u!95 &6771128227603729331
 Animator:
   serializedVersion: 5
