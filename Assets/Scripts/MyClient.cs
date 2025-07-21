@@ -67,6 +67,39 @@ public class MyClient : NetworkBehaviour
         { 
             ToggleController(false);
         }
+
+        if (isLocalPlayer)
+        {
+            // Set this player and children to LocalPlayer layer
+            SetLayerRecursively(gameObject, LayerMask.NameToLayer("LocalPlayer"));
+
+            // Find your camera (adjust if camera is elsewhere)
+            Camera localCam = Camera.main;
+
+            if (localCam != null)
+            {
+                // Remove LocalPlayer layer from camera's culling mask
+                localCam.cullingMask &= ~(1 << LayerMask.NameToLayer("LocalPlayer"));
+            }
+            else
+            {
+                Debug.LogWarning("No Main Camera found for local player");
+            }
+        }
+
+    }
+
+    void SetLayerRecursively(GameObject obj, int newLayer)
+    {
+        if (obj == null) return;
+
+        obj.layer = newLayer;
+
+        foreach (Transform child in obj.transform)
+        {
+            if (child == null) continue;
+            SetLayerRecursively(child.gameObject, newLayer);
+        }
     }
 
     void ToggleController(bool value) 

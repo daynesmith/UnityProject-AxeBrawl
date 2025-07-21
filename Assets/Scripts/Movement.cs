@@ -20,11 +20,13 @@ public class Movement : NetworkBehaviour
     [Header("Camera")]
     [SerializeField] private Transform camHolder;
     [SerializeField] private float lookSpeed = 2.0f;
-    [SerializeField] private float lookXLimit = 45.0f;
+    [SerializeField] private float lookXLimit = 80f;
     float rotationX = 0;
     Vector2 inputDir;
+    [SerializeField] NetworkAnimator networkAnimator;
 
-
+    Vector3 lastPosition;
+    Animator animator;
 
     public CharacterController characterController { get; private set; }
     public bool isGrounded { get; private set; }
@@ -35,13 +37,41 @@ public class Movement : NetworkBehaviour
     {
         Cursor.lockState = CursorLockMode.Locked;
         characterController = GetComponent<CharacterController>();
+        animator = GetComponent<Animator>();
+        lastPosition = transform.position;
+        if (networkAnimator == null)
+        {
+            networkAnimator = GetComponent<NetworkAnimator>();
+        }
+
+        if (animator == null) {
+            Debug.LogError("animator not found in" + gameObject.name);
+        }
     }
 
 
     void Update()
     {
         if (!isLocalPlayer) return;
+        float distance = Vector3.Distance(transform.position, lastPosition);
+        float moveSpeed = distance / Time.deltaTime;
+        lastPosition = transform.position;
+        float horizontal = Input.GetAxisRaw("Horizontal");
+        float vertical = Input.GetAxisRaw("Vertical");
+        bool isMoving = horizontal != 0 || vertical != 0;
+        bool isRunningAnim = isMoving && Input.GetKey(KeyCode.LeftShift);
 
+        // Set animator parameters
+        animator.SetBool("isWalking", isMoving && !isRunningAnim);
+        animator.SetBool("isRunning", isRunningAnim);
+
+        if (Input.GetKeyDown(KeyCode.Mouse0))
+        {
+            networkAnimator.SetTrigger("punch");
+        }
+
+
+        animator.SetFloat("speed", moveSpeed);
         CheckIfGrounded();
         bool isRunning = Input.GetKey(KeyCode.LeftShift);
         MovementHandler(isRunning);
@@ -49,6 +79,7 @@ public class Movement : NetworkBehaviour
 
     private void MovementHandler(bool isRunning)
     {
+
         if (isGrounded && velocity.y < 0)
             velocity.y = -2f;
         if (!(FindObjectOfType<PauseMenu>()?.IsPaused() ?? false))
