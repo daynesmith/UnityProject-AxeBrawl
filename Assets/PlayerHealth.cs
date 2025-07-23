@@ -11,7 +11,7 @@ public class PlayerHealth : NetworkBehaviour
     public float respawnDelay = 3f;
 
     private HealthTextUI healthTextUI;
-
+    [SerializeField] private HealthBar healthBar;
     public override void OnStartLocalPlayer()
     {
         SetupLocalUI();
@@ -26,6 +26,9 @@ public class PlayerHealth : NetworkBehaviour
             healthTextUI.SetHealth(newHealth);
         }
 
+        if (healthBar != null)
+            healthBar.SetHealth(newHealth, maxHealth);
+
         if (newHealth <= 0)
         {
             HandleDeath();
@@ -38,7 +41,6 @@ public class PlayerHealth : NetworkBehaviour
         if (currentHealth <= 0) return;
 
         currentHealth = Mathf.Max(currentHealth - amount, 0);
-
         if (currentHealth == 0)
         {
             StartCoroutine(RespawnCoroutine());

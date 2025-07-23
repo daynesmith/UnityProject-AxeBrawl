@@ -8,7 +8,7 @@ public class DamageZone : MonoBehaviour
         if (health != null && health.isLocalPlayer)
         {
             // Local player entered — request the server to damage them
-            health.CmdTakeDamage(25);
+            health.CmdTakeDamage(100);
         }
     }
 }

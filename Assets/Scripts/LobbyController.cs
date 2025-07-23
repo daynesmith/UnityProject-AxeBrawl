@@ -13,7 +13,7 @@ public class LobbyController : MonoBehaviour
         instance = this;
     }
 
-
+  
     public void StartGameWithParty() 
     {
         if (AllPlayersReady()) 
@@ -40,7 +40,9 @@ public class LobbyController : MonoBehaviour
 
     private void StartGame()
     {
-        NetworkManager.singleton.ServerChangeScene("Stage_1");
+        string selectedStage = MainMenu.instance.GetSelectedStage();
+
+        NetworkManager.singleton.ServerChangeScene(selectedStage);
     }
 
     private bool AllPlayersReady() 

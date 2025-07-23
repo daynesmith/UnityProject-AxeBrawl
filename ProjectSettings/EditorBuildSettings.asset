@@ -9,6 +9,9 @@ EditorBuildSettings:
     path: Assets/Scenes/MainMenu.unity
     guid: 12157234c67dbe34d896282161c213b6
   - enabled: 1
-    path: Assets/Scenes/Stage_1.unity
+    path: Assets/Scenes/PunchGame.unity
     guid: 35feab57cfbaea048a5dacffd1f9d5b9
+  - enabled: 1
+    path: Assets/Scenes/TagGame.unity
+    guid: 9804f044c51ac114282b7235759f050d
   m_configObjects: {}

@@ -28,6 +28,10 @@ public class Movement : NetworkBehaviour
     Vector3 lastPosition;
     Animator animator;
 
+    public float punchCooldown = 1f; // cooldown time in seconds
+
+    private float nextPunchTime = 0f;
+
     public CharacterController characterController { get; private set; }
     public PlayerHealth characterHealth { get; private set; }
     public bool isGrounded { get; private set; }
@@ -67,9 +71,10 @@ public class Movement : NetworkBehaviour
         animator.SetBool("isWalking", isMoving && !isRunningAnim);
         animator.SetBool("isRunning", isRunningAnim);
 
-        if (Input.GetKeyDown(KeyCode.Mouse0))
+        if (Input.GetKeyDown(KeyCode.Mouse0) && Time.time >= nextPunchTime)
         {
             networkAnimator.SetTrigger("punch");
+            nextPunchTime = Time.time + punchCooldown;
         }
         if (Input.GetKeyDown(KeyCode.R))
         {

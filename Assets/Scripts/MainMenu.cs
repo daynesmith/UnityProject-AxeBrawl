@@ -9,7 +9,7 @@ public enum MenuState { Home, InParty }
 public class MainMenu : MonoBehaviour
 {
     public static MainMenu instance;
-
+    public Button startGameButton;
     public MenuState state = MenuState.Home;
     [SerializeField] private GameObject homeUI, partyUI;
 
@@ -19,6 +19,14 @@ public class MainMenu : MonoBehaviour
     public Color readyColor, notReadyColor;
 
     public Button quitButton;
+
+    [Header("Stage Selection")]
+    [SerializeField] private TMP_Text stageNameText;
+    [SerializeField] private Button nextStageButton;
+    [SerializeField] private Button prevStageButton;
+
+    private string[] stageSceneNames = { "PunchGame", "TagGame"};
+    private int selectedStageIndex = 0;
     private void Awake()
     {
         instance = this;
@@ -26,11 +34,22 @@ public class MainMenu : MonoBehaviour
     private void Start()
     {
         quitButton.onClick.AddListener(QuitGame);
+        UpdateStageText();
+        if (!NetworkServer.active || !NetworkClient.ready || !NetworkClient.localPlayer.isServer)
+        {
+            startGameButton.gameObject.SetActive(false);
+        }
+        else
+        {
+            startGameButton.gameObject.SetActive(true);
+        }
+
     }
     public void Update()
     {
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
+        
     }
     public void QuitGame() 
     {
@@ -77,18 +96,21 @@ public class MainMenu : MonoBehaviour
     public void StartGame()
     {
         LobbyController.instance.StartGameWithParty();
+        RefreshStartButton();  
     }
 
     public void StartLocalClient()
     {
         ((MyNetworkManager)NetworkManager.singleton).SetMultiplayer(true);
         NetworkManager.singleton.StartClient();
+        RefreshStartButton();
     }
 
     public void StartLocalHost()
     {
         ((MyNetworkManager)NetworkManager.singleton).SetMultiplayer(true);
         NetworkManager.singleton.StartHost();
+        RefreshStartButton();
     }
 
     public void ToggleReady()
@@ -102,5 +124,45 @@ public class MainMenu : MonoBehaviour
     {
         readyButton_Text.text = value ? "Ready" : "Not Ready";
         readyButton_Image.color = value ? readyColor : notReadyColor;
+        RefreshStartButton();
+    }
+
+    public void NextStage()
+    {
+        if (!NetworkServer.active) return;
+
+        selectedStageIndex = (selectedStageIndex + 1) % stageSceneNames.Length;
+        UpdateStageText();
+    }
+
+    public void PreviousStage()
+    {
+        if (!NetworkServer.active) return;
+
+        selectedStageIndex = (selectedStageIndex - 1 + stageSceneNames.Length) % stageSceneNames.Length;
+        UpdateStageText();
+    }
+
+    private void UpdateStageText()
+    {
+        if (stageNameText != null)
+            stageNameText.text = $"Selected Stage: {stageSceneNames[selectedStageIndex]}";
+    }
+
+    // This method lets other classes ask the currently selected stage
+    public string GetSelectedStage()
+    {
+        return stageSceneNames[selectedStageIndex];
+    }
+
+    public void RefreshStartButton() {
+        if (!NetworkServer.active || !NetworkClient.ready || !NetworkClient.localPlayer.isServer)
+        {
+            startGameButton.gameObject.SetActive(false);
+        }
+        else
+        {
+            startGameButton.gameObject.SetActive(true);
+        }
     }
 }
