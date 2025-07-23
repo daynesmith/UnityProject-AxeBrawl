@@ -99,13 +99,19 @@ public class PlayerHealth : NetworkBehaviour
         }
 
         // Hide mesh/graphics
-        GetComponentInChildren<Renderer>().enabled = false;
+        foreach (Renderer r in GetComponentsInChildren<Renderer>())
+        {
+            r.enabled = false;
+        }
     }
 
     [ClientRpc]
     private void RpcRespawn()
     {
-        GetComponentInChildren<Renderer>().enabled = true;
+        foreach (Renderer r in GetComponentsInChildren<Renderer>())
+        {
+            r.enabled = true;
+        }
         SetupLocalUI(); // <-- this ensures healthTextUI is reassigned after respawn
         StartCoroutine(EnableMovementDelayed());
     }

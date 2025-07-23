@@ -28,6 +28,13 @@ public class Movement : NetworkBehaviour
     Vector3 lastPosition;
     Animator animator;
 
+    [SyncVar(hook = nameof(OnHasAxeChanged))]
+    public bool hasAxe;
+
+    [Header("AxeStuff")]
+    [SerializeField] private GameObject heldAxeModel;
+
+
     public float punchCooldown = 1f; // cooldown time in seconds
 
     private float nextPunchTime = 0f;
@@ -53,6 +60,7 @@ public class Movement : NetworkBehaviour
         if (animator == null) {
             Debug.LogError("animator not found in" + gameObject.name);
         }
+        
     }
 
 
@@ -70,8 +78,9 @@ public class Movement : NetworkBehaviour
         // Set animator parameters
         animator.SetBool("isWalking", isMoving && !isRunningAnim);
         animator.SetBool("isRunning", isRunningAnim);
+        animator.SetBool("hasAxe", hasAxe);
 
-        if (Input.GetKeyDown(KeyCode.Mouse0) && Time.time >= nextPunchTime)
+        if (Input.GetKeyDown(KeyCode.Mouse0) && Time.time >= nextPunchTime && hasAxe == false)
         {
             networkAnimator.SetTrigger("punch");
             nextPunchTime = Time.time + punchCooldown;
@@ -156,5 +165,32 @@ public class Movement : NetworkBehaviour
     {
         velocity = Vector3.zero;
         inputDir = Vector2.zero;
+    }
+
+    [Command]
+    public void CmdTryPickupAxe(NetworkIdentity axeNetIdentity)
+    {
+        if (hasAxe) return; // Optional: don't double-pickup
+
+        GameObject axeObj = axeNetIdentity.gameObject;
+
+        if (axeObj != null)
+        {
+            hasAxe = true;
+            RpcShowHeldAxe(true);
+            // You can do anything else here — e.g., spawn axe in hand
+            NetworkServer.Destroy(axeObj); // Destroy on server; synced to all clients
+        }
+    }
+
+    void OnHasAxeChanged(bool oldValue, bool newValue)
+    {
+        animator.SetBool("hasAxe", newValue);
+    }
+
+    [ClientRpc]
+    void RpcShowHeldAxe(bool value)
+    {
+        heldAxeModel.SetActive(value);
     }
 }

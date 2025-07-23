@@ -71,7 +71,21 @@ public class MyClient : NetworkBehaviour
         if (isLocalPlayer)
         {
             // Set this player and children to LocalPlayer layer
-            SetLayerRecursively(gameObject, LayerMask.NameToLayer("LocalPlayer"));
+            SetLayerRecursively(gameObject, LayerMask.NameToLayer("LocalPlayerHidden"));
+
+            // Then override just the arms to LocalArms so they render
+            Transform armLeft = transform.Find("Controller/Barbarian/Barbarian_ArmLeft");
+            Transform armRight = transform.Find("Controller/Barbarian/Barbarian_ArmRight");
+            Transform axe_1H = transform.Find("Controller/Barbarian/Rig/root/hips/spine/chest/upperarm.r/lowerarm.r/wrist.r/hand.r/handslot.r/1H_Axe");
+
+            if (armLeft != null)
+                SetLayerRecursively(armLeft.gameObject, LayerMask.NameToLayer("LocalPlayerShow"));
+
+            if (armRight != null)
+                SetLayerRecursively(armRight.gameObject, LayerMask.NameToLayer("LocalPlayerShow"));
+
+            if (axe_1H != null)
+                SetLayerRecursively(axe_1H.gameObject, LayerMask.NameToLayer("LocalPlayerShow"));
 
             // Find your camera (adjust if camera is elsewhere)
             Camera localCam = Camera.main;
@@ -79,7 +93,8 @@ public class MyClient : NetworkBehaviour
             if (localCam != null)
             {
                 // Remove LocalPlayer layer from camera's culling mask
-                localCam.cullingMask &= ~(1 << LayerMask.NameToLayer("LocalPlayer"));
+                localCam.cullingMask &= ~(1 << LayerMask.NameToLayer("LocalPlayerHidden"));
+                localCam.cullingMask |= (1 << LayerMask.NameToLayer("LocalPlayerShow"));
             }
             else
             {
@@ -151,7 +166,7 @@ public class MyClient : NetworkBehaviour
 
     #endregion
 
-
+    
 
     private void OnDestroy()
     {

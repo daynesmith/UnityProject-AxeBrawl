@@ -25,7 +25,7 @@ Transform:
   m_GameObject: {fileID: 709993642344972423}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 1.6, z: 0}
+  m_LocalPosition: {x: 0, y: 1.65, z: -0.06}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -318,7 +318,7 @@ CharacterController:
   m_Height: 2
   m_Radius: 0.5
   m_SlopeLimit: 45
-  m_StepOffset: 0.5
+  m_StepOffset: 0.45
   m_SkinWidth: 0.08
   m_MinMoveDistance: 0.001
   m_Center: {x: 0, y: 0, z: 0}
@@ -375,6 +375,8 @@ MonoBehaviour:
   lookSpeed: 2
   lookXLimit: 88
   networkAnimator: {fileID: 8165185891684482670}
+  hasAxe: 0
+  heldAxeModel: {fileID: 7333947525259164745}
   punchCooldown: 1
 --- !u!114 &-6430855426980152301
 MonoBehaviour:
@@ -521,6 +523,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4891bc7bd8480fa4b996df7ee5ec9b8f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  syncDirection: 0
+  syncMode: 0
+  syncInterval: 0
 --- !u!1 &3313687770774134005
 GameObject:
   m_ObjectHideFlags: 0
@@ -979,6 +984,11 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: -6288891028444226299, guid: b6e9c32e94a4cbd448855e1b2319feb4,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: -6057219835555335545, guid: b6e9c32e94a4cbd448855e1b2319feb4,
         type: 3}
       propertyPath: m_IsActive
@@ -1016,6 +1026,12 @@ PrefabInstance:
 --- !u!4 &350099133853945767 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: b6e9c32e94a4cbd448855e1b2319feb4,
+    type: 3}
+  m_PrefabInstance: {fileID: 239100021162911820}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &7333947525259164745 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: -1831242830755310587, guid: b6e9c32e94a4cbd448855e1b2319feb4,
     type: 3}
   m_PrefabInstance: {fileID: 239100021162911820}
   m_PrefabAsset: {fileID: 0}
