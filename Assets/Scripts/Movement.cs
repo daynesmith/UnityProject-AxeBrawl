@@ -28,15 +28,18 @@ public class Movement : NetworkBehaviour
     Vector3 lastPosition;
     Animator animator;
 
-    [SyncVar(hook = nameof(OnHasAxeChanged))]
-    public bool hasAxe;
+    
 
     [Header("AxeStuff")]
     [SerializeField] private GameObject heldAxeModel;
+    [SerializeField] private GameObject thrownAxePrefab;
+    [SerializeField] private Transform throwPoint;
+    [SerializeField] private float throwForce = 20f;
+    [SyncVar(hook = nameof(OnHasAxeChanged))]
+    public bool hasAxe;
 
-
+    [Header("Punch")]
     public float punchCooldown = 1f; // cooldown time in seconds
-
     private float nextPunchTime = 0f;
 
     public CharacterController characterController { get; private set; }
@@ -88,6 +91,11 @@ public class Movement : NetworkBehaviour
         if (Input.GetKeyDown(KeyCode.R))
         {
             characterHealth.CmdTakeDamage(100);
+        }
+        if (Input.GetKeyDown(KeyCode.Mouse0)&& hasAxe ==true)
+        {
+            networkAnimator.SetTrigger("throwAxe");
+            
         }
 
 
@@ -182,6 +190,38 @@ public class Movement : NetworkBehaviour
             NetworkServer.Destroy(axeObj); // Destroy on server; synced to all clients
         }
     }
+
+
+    public void OnAxeThrowAnimationEvent()
+    {
+        if (!isLocalPlayer) return;// Only allow local player to throw
+        Vector3 throwDirection = playerCamera.transform.forward;
+        CmdThrowAxe(throwDirection);
+    }
+
+    [Command]
+    void CmdThrowAxe(Vector3 throwDirection)
+    {
+        Quaternion throwRotation = Quaternion.LookRotation(throwDirection) * Quaternion.Euler(0, 90, 0);
+        GameObject axe = Instantiate(thrownAxePrefab, throwPoint.position, throwRotation);
+
+        Rigidbody rb = axe.GetComponent<Rigidbody>();
+        Vector3 velocity = throwDirection * throwForce;
+        Vector3 angularVelocity = axe.transform.forward * 20f;
+
+        // Set velocity on the server (host)
+        rb.velocity = velocity;
+        rb.angularVelocity = angularVelocity;
+
+        NetworkServer.Spawn(axe, connectionToClient); // Give client authority if needed
+
+        // Tell all clients (including this one) to set velocity on their axe instance
+        axe.GetComponent<ThrownAxe>().RpcSetVelocity(velocity, angularVelocity);
+
+        hasAxe = false;
+        RpcShowHeldAxe(false);
+    }
+
 
     void OnHasAxeChanged(bool oldValue, bool newValue)
     {
