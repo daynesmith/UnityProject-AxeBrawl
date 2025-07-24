@@ -20,8 +20,16 @@ public class Movement : NetworkBehaviour
     [Header("Camera")]
     [SerializeField] private Transform camHolder;
     [SerializeField] private float lookSpeed = 2.0f;
-    [SerializeField] private float lookXLimit = 80f;
-    float rotationX = 0;
+
+    public float maxHeadPitch = 30f;          // Max up/down head rotation
+    public float headTurnFollowSpeed = 2.5f;    // Smoothing for head turning
+    public float maxHeadYaw = 145f;            // Max left/right head rotation from forward
+
+    private float cameraPitch = 0f;           // Vertical camera rotation (X-axis)
+    private float playerYaw = 0f;             // Accumulated yaw from mouse (Y-axis)
+
+    private float headYawOffset = 0f;
+    public Transform headTransform;
     Vector2 inputDir;
     [SerializeField] NetworkAnimator networkAnimator;
 
@@ -92,10 +100,11 @@ public class Movement : NetworkBehaviour
         {
             characterHealth.CmdTakeDamage(100);
         }
-        if (Input.GetKeyDown(KeyCode.Mouse0)&& hasAxe ==true)
+        if (Input.GetKeyDown(KeyCode.Mouse0)&& Time.time >= nextPunchTime && hasAxe ==true)
         {
             networkAnimator.SetTrigger("throwAxe");
-            
+            nextPunchTime = Time.time + punchCooldown;
+
         }
 
 
@@ -156,11 +165,27 @@ public class Movement : NetworkBehaviour
         if (FindObjectOfType<PauseMenu>()?.IsPaused() ?? false)
             return;
 
-        inputDir = new Vector2(Input.GetAxisRaw("Mouse X"), Input.GetAxisRaw("Mouse Y"));
-        rotationX += -inputDir.y * lookSpeed;
-        rotationX = Mathf.Clamp(rotationX, -lookXLimit, lookXLimit);
-        camHolder.transform.localRotation = Quaternion.Euler(rotationX, 0, 0);
-        transform.rotation *= Quaternion.Euler(0, inputDir.x * lookSpeed, 0);
+        Vector2 inputDir = new Vector2(Input.GetAxisRaw("Mouse X"), Input.GetAxisRaw("Mouse Y"));
+
+        // Rotate player on Y
+        playerYaw += inputDir.x * lookSpeed;
+        transform.rotation = Quaternion.Euler(0f, playerYaw, 0f);
+
+        // Rotate camera up/down
+        cameraPitch -= inputDir.y * lookSpeed;
+        cameraPitch = Mathf.Clamp(cameraPitch, -89f, 89f); // Camera can go full up/down
+        camHolder.localRotation = Quaternion.Euler(cameraPitch, 0f, 0f);
+
+        // --- HEAD ROTATION ---
+        // Clamp pitch for head only (not full camera pitch)
+        float clampedHeadPitch = Mathf.Clamp(cameraPitch, -maxHeadPitch, maxHeadPitch);
+
+        // Smoothly rotate head Y toward mouse movement (not same as camera yaw)
+        float targetHeadYaw = Mathf.Clamp(inputDir.x * maxHeadYaw, -maxHeadYaw, maxHeadYaw);
+        headYawOffset = Mathf.Lerp(headYawOffset, targetHeadYaw, Time.deltaTime * headTurnFollowSpeed);
+
+        // Apply head rotation (local to body)
+        headTransform.localRotation = Quaternion.Euler(clampedHeadPitch, headYawOffset, 0f);
     }
 
     private void OnDrawGizmos()
@@ -196,6 +221,7 @@ public class Movement : NetworkBehaviour
     {
         if (!isLocalPlayer) return;// Only allow local player to throw
         Vector3 throwDirection = playerCamera.transform.forward;
+        hasAxe = false;
         CmdThrowAxe(throwDirection);
     }
 

@@ -375,6 +375,10 @@ MonoBehaviour:
   camHolder: {fileID: 8153937580464344507}
   lookSpeed: 2
   lookXLimit: 88
+  maxHeadPitch: 30
+  headTurnFollowSpeed: 2.5
+  maxHeadYaw: 145
+  headTransform: {fileID: 3993287378903317487}
   networkAnimator: {fileID: 8165185891684482670}
   heldAxeModel: {fileID: 7333947525259164745}
   thrownAxePrefab: {fileID: 6285351266302843522, guid: 48cb42beb79c1e148a04bc0d6bc0efd1,
@@ -783,7 +787,7 @@ Transform:
   m_GameObject: {fileID: 7815086916459552811}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.248, y: 0.647, z: 1.195}
+  m_LocalPosition: {x: -0.059, y: 0.871, z: 1.492}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1062,6 +1066,12 @@ PrefabInstance:
 --- !u!4 &350099133853945767 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: b6e9c32e94a4cbd448855e1b2319feb4,
+    type: 3}
+  m_PrefabInstance: {fileID: 239100021162911820}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &3993287378903317487 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: -5459922382353263709, guid: b6e9c32e94a4cbd448855e1b2319feb4,
     type: 3}
   m_PrefabInstance: {fileID: 239100021162911820}
   m_PrefabAsset: {fileID: 0}

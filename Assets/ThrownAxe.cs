@@ -34,6 +34,20 @@ public class ThrownAxe : NetworkBehaviour
         // Stick to what was hit
         transform.parent = collision.transform;
 
+        if (isServer) // Ensure this runs only on the server
+        {
+            if (collision.gameObject.CompareTag("Player"))
+            {
+                PlayerHealth player = collision.gameObject.GetComponent<PlayerHealth>();
+                if (player != null)
+                {
+                    player.ApplyDamage(100); // Or however much damage you want
+                    Destroy(gameObject, 3f);
+                }
+            }
+        }
+
+
         // Optional: destroy after a while if needed
         Destroy(gameObject, 10f);
     }

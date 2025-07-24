@@ -81,17 +81,30 @@ public class PauseMenu : MonoBehaviour
         SteamLobby.instance?.Leave();
         Destroy(SteamLobby.instance);
 
-        if (NetworkServer.active)
+        if (NetworkManager.singleton == null)
         {
-            NetworkClient.Shutdown();
-            NetworkServer.Shutdown();
-        }
-        else
-        {
-            NetworkClient.Shutdown();
+            Debug.LogWarning("No NetworkManager found!");
+            return;
         }
 
-        Destroy(NetworkManager.singleton);
+        if (NetworkServer.active && NetworkClient.isConnected)
+        {
+            // Host (server + client)
+            NetworkManager.singleton.StopHost(); // Cleans up both client and server
+        }
+        else if (NetworkClient.isConnected)
+        {
+            // Client only
+            NetworkManager.singleton.StopClient(); // Disconnects client
+        }
+        else if (NetworkServer.active)
+        {
+            // Dedicated server
+            NetworkManager.singleton.StopServer();
+        }
+
+        // Cleanup
+        Destroy(NetworkManager.singleton.gameObject); // Remove manager if needed
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
 
