@@ -1,4 +1,4 @@
-using Mirror;
+﻿using Mirror;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -30,6 +30,11 @@ public class Movement : NetworkBehaviour
 
     private float headYawOffset = 0f;
     public Transform headTransform;
+    [SyncVar(hook = nameof(OnHeadPitchChanged))] private float syncedHeadPitch;
+    [SyncVar(hook = nameof(OnHeadYawChanged))] private float syncedHeadYaw;
+    float targetPitch;
+    float targetYaw;
+
     Vector2 inputDir;
     [SerializeField] NetworkAnimator networkAnimator;
 
@@ -186,6 +191,8 @@ public class Movement : NetworkBehaviour
 
         // Apply head rotation (local to body)
         headTransform.localRotation = Quaternion.Euler(clampedHeadPitch, headYawOffset, 0f);
+
+        CmdSyncHeadRotation(clampedHeadPitch, headYawOffset);
     }
 
     private void OnDrawGizmos()
@@ -200,6 +207,31 @@ public class Movement : NetworkBehaviour
         inputDir = Vector2.zero;
     }
 
+    void OnHeadPitchChanged(float oldVal, float newVal)
+    {
+        if (isLocalPlayer) return;
+
+        UpdateHeadRotation(newVal, syncedHeadYaw);
+    }
+
+    void OnHeadYawChanged(float oldVal, float newVal)
+    {
+        if (isLocalPlayer) return;
+        UpdateHeadRotation(syncedHeadPitch, newVal);
+    }
+
+    void UpdateHeadRotation(float pitch, float yaw)
+    {
+        headTransform.localRotation = Quaternion.Euler(pitch, yaw, 0);
+    }
+
+    [Command]
+    void CmdSyncHeadRotation(float pitch, float yaw)
+    {
+        syncedHeadPitch = pitch;
+        syncedHeadYaw = yaw;
+    }
+
     [Command]
     public void CmdTryPickupAxe(NetworkIdentity axeNetIdentity)
     {
@@ -211,7 +243,7 @@ public class Movement : NetworkBehaviour
         {
             hasAxe = true;
             RpcShowHeldAxe(true);
-            // You can do anything else here � e.g., spawn axe in hand
+            // You can do anything else here — e.g., spawn axe in hand
             NetworkServer.Destroy(axeObj); // Destroy on server; synced to all clients
         }
     }
