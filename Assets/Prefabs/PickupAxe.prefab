@@ -15,7 +15,7 @@ GameObject:
   - component: {fileID: 1033135345518296575}
   - component: {fileID: 1939565226041593186}
   m_Layer: 0
-  m_Name: Axe
+  m_Name: PickupAxe
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -119,6 +119,10 @@ MonoBehaviour:
   syncDirection: 0
   syncMode: 0
   syncInterval: 0
+  renderers:
+  - {fileID: 1430697509516163565}
+  colliders:
+  - {fileID: 1939565226041593186}
 --- !u!65 &1939565226041593186
 BoxCollider:
   m_ObjectHideFlags: 0

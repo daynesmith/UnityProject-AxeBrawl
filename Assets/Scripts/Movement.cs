@@ -241,10 +241,15 @@ public class Movement : NetworkBehaviour
 
         if (axeObj != null)
         {
+            AxePickup axePickup = axeObj.GetComponent<AxePickup>();
+            if (axePickup != null)
+            {
+                axePickup.ScheduleRespawn(); // Schedule the respawn before destroying
+            }
+
             hasAxe = true;
             RpcShowHeldAxe(true);
             // You can do anything else here — e.g., spawn axe in hand
-            NetworkServer.Destroy(axeObj); // Destroy on server; synced to all clients
         }
     }
 
