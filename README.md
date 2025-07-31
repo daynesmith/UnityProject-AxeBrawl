@@ -44,3 +44,5 @@
 1. **Clone the repository:**
    ```bash
    git clone https://github.com/yourusername/axe-brawl.git
+2. Launch Steam
+3. Open Build Folder and Launch AxeBrawl
