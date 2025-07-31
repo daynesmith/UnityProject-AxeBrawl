@@ -36,9 +36,8 @@
 
 
 <img width="1920" height="1080" alt="image" src="https://github.com/user-attachments/assets/3a3f8f56-953a-4b15-94a7-a7c974998543" />
+<img width="1920" height="1080" alt="image" src="https://github.com/user-attachments/assets/c748670b-396a-4e1c-9e55-f7013af58954" />
 
-
-![Gameplay Screenshot 2](images/screenshot2.png)
 
 ---
 
