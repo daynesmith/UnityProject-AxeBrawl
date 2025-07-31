@@ -35,8 +35,8 @@
 ## 🖼️ Screenshots
 
 
-![Gameplay Screenshot 1](<img width="1920" height="1080" alt="image" src="https://github.com/user-attachments/assets/092f9922-99f3-4599-b847-b53ea4cb5e44" />
-)  
+![Uploading image.png…]()
+
 ![Gameplay Screenshot 2](images/screenshot2.png)
 
 ---
