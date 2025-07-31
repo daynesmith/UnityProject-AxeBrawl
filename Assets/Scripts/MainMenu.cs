@@ -25,7 +25,7 @@ public class MainMenu : MonoBehaviour
     [SerializeField] private Button nextStageButton;
     [SerializeField] private Button prevStageButton;
 
-    private string[] stageSceneNames = { "PunchGame", "TagGame"};
+    private string[] stageSceneNames = { "PunchGame"};
     private int selectedStageIndex = 0;
     private void Awake()
     {
